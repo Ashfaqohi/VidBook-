@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: vidbook-api-dev
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    branch: develop
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    autoDeployTrigger: off
+    envVars:
+      - key: VIDBOOK_ENVIRONMENT
+        value: development
+      - key: VIDBOOK_DB_PATH
+        value: /data/vidbook.db
+      - key: VIDBOOK_STORAGE_PATH
+        value: /data/projects
+      - key: VIDBOOK_API_TOKEN
+        generateValue: true
+      - key: VIDBOOK_CORS_ORIGINS
+        sync: false
+    disk:
+      name: vidbook-data-dev
+      mountPath: /data
+      sizeGB: 10
+
+  - type: web
+    name: vidbook-frontend-dev
+    runtime: docker
+    region: singapore
+    plan: free
+    branch: develop
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    healthCheckPath: /health
+    autoDeployTrigger: off
+    envVars:
+      - key: VIDBOOK_API_HOSTPORT
+        fromService:
+          type: web
+          name: vidbook-api-dev
+          property: hostport

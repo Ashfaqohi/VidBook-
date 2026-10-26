@@ -1,0 +1,29 @@
+services:
+  api:
+    build: ./backend
+    environment:
+      VIDBOOK_DB_PATH: /data/vidbook.db
+      VIDBOOK_STORAGE_PATH: /data/projects
+      VIDBOOK_CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+    volumes:
+      - vidbook-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8000
+    depends_on:
+      api:
+        condition: service_healthy
+volumes:
+  vidbook-data:

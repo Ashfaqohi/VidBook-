@@ -1,0 +1,29 @@
+name: CD - manual production deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Trigger Render API production deploy
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_PROD_API_DEPLOY_HOOK_URL }}
+        run: curl --fail-with-body --silent --show-error --request POST "$DEPLOY_HOOK"
+      - name: Trigger Render frontend production deploy
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_PROD_FRONTEND_DEPLOY_HOOK_URL }}
+        run: curl --fail-with-body --silent --show-error --request POST "$DEPLOY_HOOK"
