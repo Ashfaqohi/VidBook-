@@ -6,7 +6,7 @@ services:
     plan: 0.5c-512mb
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
-    branch: main
+    branch: Ashaunted
     healthCheckPath: /health
     autoDeployTrigger: off
     envVars:
@@ -32,7 +32,7 @@ services:
     plan: free
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
-    branch: main
+    branch: Ashaunted
     healthCheckPath: /health
     autoDeployTrigger: off
     envVars:
